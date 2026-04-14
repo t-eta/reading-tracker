@@ -22,13 +22,24 @@ const seededBooks = [
   { title: "Дворцовые интриги на Руси", author: "П.П. Толочко", total: 853 },
 ];
 
+const DATA_REVISION = JSON.stringify({
+  challenge: {
+    startDate: "2026-03-01",
+    endDate: "2026-08-25",
+  },
+  seededBooks,
+});
+
 const defaultState = {
   challenge: {
     startDate: "2026-03-01",
     endDate: "2026-08-25",
     today: todayIso,
   },
-  books: seededBooks.map((book) => ({ id: crypto.randomUUID(), ...book, read: 0, status: "want" })),
+  books: seededBooks.map((book) => ({ id: crypto.randomUUID(), ...book, read: 0, status: "want", source: "seed" })),
+  meta: {
+    seedRevision: DATA_REVISION,
+  },
 
   currentTab: "want",
 };
@@ -92,6 +103,7 @@ function bindEvents() {
       total,
       read: 0,
       status: "want",
+      source: "custom",
     });
 
     refs.bookForm.reset();
@@ -314,15 +326,24 @@ function loadState() {
     if (!raw) return structuredClone(defaultState);
     const parsed = JSON.parse(raw);
     const normalizedBooks = normalizeBooks(parsed.books);
-
-    return mergeSeedBooks({
+    const normalizedMeta = normalizeMeta(parsed.meta);
+    const nextState = {
       ...structuredClone(defaultState),
       ...parsed,
       books: normalizedBooks,
-    });
+      meta: normalizedMeta,
+    };
+
+    return reconcileDataRevision(nextState);
   } catch {
     return structuredClone(defaultState);
   }
+}
+
+function normalizeMeta(meta) {
+  return {
+    seedRevision: typeof meta?.seedRevision === "string" ? meta.seedRevision : "",
+  };
 }
 
 function normalizeBooks(books) {
@@ -344,21 +365,58 @@ function normalizeBooks(books) {
         total,
         read: status === "done" ? total : status === "want" ? 0 : read,
         status,
+        source: book.source === "seed" ? "seed" : "custom",
       };
     })
     .filter(Boolean);
 }
 
-function mergeSeedBooks(nextState) {
-  const byKey = new Set((nextState.books || []).map(bookKey));
-  const missing = seededBooks
-    .filter((book) => !byKey.has(bookKey(book)))
-    .map((book) => ({ id: crypto.randomUUID(), ...book, read: 0, status: "want" }));
+function reconcileDataRevision(nextState) {
+  const shouldRefreshSeeds = nextState.meta.seedRevision !== DATA_REVISION;
 
   return {
     ...nextState,
-    books: [...(nextState.books || []), ...missing],
+    books: mergeSeedBooks(nextState.books || [], shouldRefreshSeeds),
+    meta: {
+      ...nextState.meta,
+      seedRevision: DATA_REVISION,
+    },
   };
+}
+
+function mergeSeedBooks(books, shouldRefreshSeeds = false) {
+  const list = Array.isArray(books) ? books : [];
+  const seededKeySet = new Set(seededBooks.map(bookKey));
+  const booksByKey = new Map(list.map((book) => [bookKey(book), book]));
+
+  const customBooks = list
+    .filter((book) => {
+      const key = bookKey(book);
+      if (!seededKeySet.has(key)) return true;
+      return book.source === "custom";
+    })
+    .map((book) => ({ ...book, source: "custom" }));
+
+  const mergedSeeds = seededBooks.map((seed) => {
+    const existing = booksByKey.get(bookKey(seed));
+    const keepProgress = existing && (existing.source === "seed" || shouldRefreshSeeds);
+
+    const status = keepProgress ? existing.status : "want";
+    const readRaw = keepProgress ? Number(existing.read) : 0;
+    const read = Number.isFinite(readRaw) ? clamp(readRaw, 0, seed.total) : 0;
+
+    return {
+      id: existing?.id || crypto.randomUUID(),
+      title: seed.title,
+      author: seed.author,
+      total: seed.total,
+      read: status === "done" ? seed.total : status === "want" ? 0 : read,
+      status: ["want", "reading", "done"].includes(status) ? status : "want",
+      source: "seed",
+    };
+  });
+
+  return [...customBooks, ...mergedSeeds];
 }
 
 function bookKey(book) {
