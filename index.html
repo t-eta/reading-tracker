@@ -53,6 +53,13 @@
             <input type="number" id="totalInput" placeholder="Страниц" min="1" required />
             <button type="submit">Добавить</button>
           </form>
+
+          <div class="sync-controls">
+            <button type="button" id="exportBtn">Sync: скачать JSON</button>
+            <button type="button" id="importBtn">Sync: загрузить JSON</button>
+            <input type="file" id="importFileInput" accept="application/json" hidden />
+            <p class="sync-note" id="syncStatus">Данные сохраняются локально автоматически.</p>
+          </div>
         </section>
 
         <nav class="tabs card" id="tabs"></nav>
