@@ -313,10 +313,40 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return structuredClone(defaultState);
     const parsed = JSON.parse(raw);
-    return mergeSeedBooks({ ...structuredClone(defaultState), ...parsed });
+    const normalizedBooks = normalizeBooks(parsed.books);
+
+    return mergeSeedBooks({
+      ...structuredClone(defaultState),
+      ...parsed,
+      books: normalizedBooks,
+    });
   } catch {
     return structuredClone(defaultState);
   }
+}
+
+function normalizeBooks(books) {
+  if (!Array.isArray(books)) return [];
+
+  return books
+    .map((book) => {
+      const total = Number(book.total ?? book.pages);
+      if (!book?.title || !Number.isFinite(total) || total <= 0) return null;
+
+      const status = ["want", "reading", "done"].includes(book.status) ? book.status : "want";
+      const readRaw = Number(book.read);
+      const read = Number.isFinite(readRaw) ? clamp(readRaw, 0, total) : 0;
+
+      return {
+        id: book.id || crypto.randomUUID(),
+        title: String(book.title).trim(),
+        author: String(book.author || "").trim(),
+        total,
+        read: status === "done" ? total : status === "want" ? 0 : read,
+        status,
+      };
+    })
+    .filter(Boolean);
 }
 
 function mergeSeedBooks(nextState) {
