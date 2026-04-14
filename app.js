@@ -9,10 +9,25 @@ const defaultState = {
     today: todayIso,
   },
   books: [
-    { id: crypto.randomUUID(), title: "Полуночно-синий", author: "Симона ван дер Влют", total: 807, read: 0, status: "want" },
-    { id: crypto.randomUUID(), title: "Mood Machine", author: "Liz Pelly", total: 1371, read: 0, status: "reading" },
-    { id: crypto.randomUUID(), title: "Голое поле", author: "Галина Калинкина", total: 1602, read: 800, status: "reading" },
+    { id: crypto.randomUUID(), title: "Аптечка номер 4", author: "Булат Ханов", total: 435, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Страна Оз за железным занавесом", author: "Эрика Хабер", total: 1188, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Калейдоскоп. Расходные материалы", author: "Сергей Кузнецов", total: 3053, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Зависимость и ее человек", author: "Марат Агинян", total: 1000, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Гордость Карфагена", author: "Дэвид Антони Дарем", total: 2513, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Полуночно-синий", author: "Симоне ван дер Влют", total: 807, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Утешение средневековой музыкой", author: "Данил Рябичков", total: 930, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Mood Machine", author: "Liz Pelly", total: 1371, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Голое поле", author: "Галика Каликина", total: 1602, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Время старого бога", author: "Себастьян Барри", total: 742, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Полезное прошлое", author: "Виталий Тихонов", total: 939, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Что они несли с собой", author: "Тим О'Брайен", total: 716, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Жизнь, которую мы создали", author: "Бет Шапиро", total: 1375, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Музыкофилия", author: "Оливер Сакс", total: 2022, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Русские князья при дворе ханов", author: "Юрий Селезнев", total: 1027, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Ученик архитектора", author: "Элиф Шафак", total: 1927, read: 0, status: "want" },
+    { id: crypto.randomUUID(), title: "Дворцовые интриги на Руси", author: "П.П. Толочко", total: 853, read: 0, status: "want" },
   ],
+
   currentTab: "want",
 };
 
