@@ -1,4 +1,5 @@
 const STORAGE_KEY = "reading-tracker-v2";
+const EXPORT_SCHEMA_VERSION = 1;
 
 const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -63,6 +64,10 @@ const refs = {
   authorInput: document.querySelector("#authorInput"),
   totalInput: document.querySelector("#totalInput"),
   cardTemplate: document.querySelector("#bookCardTemplate"),
+  exportBtn: document.querySelector("#exportBtn"),
+  importBtn: document.querySelector("#importBtn"),
+  importFileInput: document.querySelector("#importFileInput"),
+  syncStatus: document.querySelector("#syncStatus"),
 };
 
 init();
@@ -108,6 +113,21 @@ function bindEvents() {
 
     refs.bookForm.reset();
     saveAndRender();
+  });
+
+  refs.exportBtn.addEventListener("click", () => {
+    exportStateToJson();
+  });
+
+  refs.importBtn.addEventListener("click", () => {
+    refs.importFileInput.click();
+  });
+
+  refs.importFileInput.addEventListener("change", async (e) => {
+    const [file] = e.target.files || [];
+    e.target.value = "";
+    if (!file) return;
+    await importStateFromJson(file);
   });
 }
 
@@ -425,7 +445,67 @@ function bookKey(book) {
 
 function saveAndRender() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  setSyncStatus(`Локально сохранено: ${new Date().toLocaleString("ru-RU")}`);
   render();
+}
+
+function exportStateToJson() {
+  const payload = {
+    schemaVersion: EXPORT_SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    data: state,
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  const datePart = new Date().toISOString().slice(0, 10);
+  anchor.href = url;
+  anchor.download = `reading-tracker-${datePart}.json`;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+
+  setSyncStatus("JSON-файл выгружен. Перенеси его на другое устройство и загрузи там.");
+}
+
+async function importStateFromJson(file) {
+  try {
+    const text = await file.text();
+    const payload = JSON.parse(text);
+    const imported = payload?.data;
+    if (!imported || typeof imported !== "object") {
+      throw new Error("invalid-payload");
+    }
+
+    const normalizedBooks = normalizeBooks(imported.books);
+    const normalizedMeta = normalizeMeta(imported.meta);
+    state = reconcileDataRevision({
+      ...structuredClone(defaultState),
+      ...imported,
+      books: normalizedBooks,
+      meta: normalizedMeta,
+      challenge: {
+        ...structuredClone(defaultState).challenge,
+        ...imported.challenge,
+      },
+      currentTab: ["want", "reading", "done"].includes(imported.currentTab) ? imported.currentTab : "want",
+    });
+
+    saveAndRender();
+    const importedAt = typeof payload.exportedAt === "string" ? payload.exportedAt : null;
+    const importedAtLabel = importedAt
+      ? new Date(importedAt).toLocaleString("ru-RU")
+      : "неизвестное время";
+    setSyncStatus(`Импорт завершён. Загружена копия от: ${importedAtLabel}`);
+  } catch {
+    setSyncStatus("Ошибка импорта: выбери корректный JSON-файл из Reading Tracker.");
+  }
+}
+
+function setSyncStatus(message) {
+  refs.syncStatus.textContent = message;
 }
 
 function clamp(value, min, max) {
