@@ -2,17 +2,34 @@ const STORAGE_KEY = "reading-tracker-v2";
 
 const todayIso = new Date().toISOString().slice(0, 10);
 
+const seededBooks = [
+  { title: "Аптечка номер 4", author: "Булат Ханов", total: 435 },
+  { title: "Страна Оз за железным занавесом", author: "Эрика Хабер", total: 1188 },
+  { title: "Калейдоскоп. Расходные материалы", author: "Сергей Кузнецов", total: 3053 },
+  { title: "Зависимость и ее человек", author: "Марат Агинян", total: 1000 },
+  { title: "Гордость Карфагена", author: "Дэвид Антони Дарем", total: 2513 },
+  { title: "Полуночно-синий", author: "Симоне ван дер Влют", total: 807 },
+  { title: "Утешение средневековой музыкой", author: "Данил Рябичков", total: 930 },
+  { title: "Mood Machine", author: "Liz Pelly", total: 1371 },
+  { title: "Голое поле", author: "Галика Каликина", total: 1602 },
+  { title: "Время старого бога", author: "Себастьян Барри", total: 742 },
+  { title: "Полезное прошлое", author: "Виталий Тихонов", total: 939 },
+  { title: "Что они несли с собой", author: "Тим О'Брайен", total: 716 },
+  { title: "Жизнь, которую мы создали", author: "Бет Шапиро", total: 1375 },
+  { title: "Музыкофилия", author: "Оливер Сакс", total: 2022 },
+  { title: "Русские князья при дворе ханов", author: "Юрий Селезнев", total: 1027 },
+  { title: "Ученик архитектора", author: "Элиф Шафак", total: 1927 },
+  { title: "Дворцовые интриги на Руси", author: "П.П. Толочко", total: 853 },
+];
+
 const defaultState = {
   challenge: {
     startDate: "2026-03-01",
     endDate: "2026-08-25",
     today: todayIso,
   },
-  books: [
-    { id: crypto.randomUUID(), title: "Полуночно-синий", author: "Симона ван дер Влют", total: 807, read: 0, status: "want" },
-    { id: crypto.randomUUID(), title: "Mood Machine", author: "Liz Pelly", total: 1371, read: 0, status: "reading" },
-    { id: crypto.randomUUID(), title: "Голое поле", author: "Галина Калинкина", total: 1602, read: 800, status: "reading" },
-  ],
+  books: seededBooks.map((book) => ({ id: crypto.randomUUID(), ...book, read: 0, status: "want" })),
+
   currentTab: "want",
 };
 
@@ -295,10 +312,27 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return structuredClone(defaultState);
-    return { ...structuredClone(defaultState), ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return mergeSeedBooks({ ...structuredClone(defaultState), ...parsed });
   } catch {
     return structuredClone(defaultState);
   }
+}
+
+function mergeSeedBooks(nextState) {
+  const byKey = new Set((nextState.books || []).map(bookKey));
+  const missing = seededBooks
+    .filter((book) => !byKey.has(bookKey(book)))
+    .map((book) => ({ id: crypto.randomUUID(), ...book, read: 0, status: "want" }));
+
+  return {
+    ...nextState,
+    books: [...(nextState.books || []), ...missing],
+  };
+}
+
+function bookKey(book) {
+  return `${String(book.title || "").trim()}::${String(book.author || "").trim()}`;
 }
 
 function saveAndRender() {
