@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Reading Tracker — #killwish</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="header card">
+        <div class="title-row">
+          <h1>#killwish</h1>
+          <p class="period" id="periodLabel"></p>
+        </div>
+
+        <div class="date-controls">
+          <label>
+            Старт
+            <input type="date" id="startDateInput" />
+          </label>
+          <label>
+            Дедлайн
+            <input type="date" id="endDateInput" />
+          </label>
+          <label>
+            Сегодня
+            <input type="date" id="todayInput" />
+          </label>
+        </div>
+
+        <section class="metrics" id="metricsGrid"></section>
+
+        <section class="timeline card-soft">
+          <div class="timeline-head">
+            <span>Прогресс по страницам</span>
+            <strong id="deltaLabel">—</strong>
+          </div>
+          <div class="timeline-bar" aria-hidden="true">
+            <div class="pages-layer" id="pagesLayer"></div>
+            <div class="pace-marker" id="paceMarker"></div>
+          </div>
+          <p class="timeline-caption" id="timelineCaption"></p>
+        </section>
+      </header>
+
+      <main>
+        <section class="controls card">
+          <h2>Добавить книгу</h2>
+          <form id="bookForm" class="book-form">
+            <input type="text" id="titleInput" placeholder="Название" required />
+            <input type="text" id="authorInput" placeholder="Автор" />
+            <input type="number" id="totalInput" placeholder="Страниц" min="1" required />
+            <button type="submit">Добавить</button>
+          </form>
+        </section>
+
+        <nav class="tabs card" id="tabs"></nav>
+
+        <section id="booksList" class="books"></section>
+      </main>
+    </div>
+
+    <template id="bookCardTemplate">
+      <article class="book-card card-soft">
+        <div class="book-main">
+          <div>
+            <h3 class="book-title"></h3>
+            <p class="book-author"></p>
+          </div>
+          <button class="delete-btn" type="button" title="Удалить">✕</button>
+        </div>
+
+        <div class="field-grid">
+          <label>
+            Всего страниц
+            <input class="total-pages" type="number" min="1" inputmode="numeric" />
+          </label>
+          <label class="read-wrap hidden">
+            Прочитано
+            <input class="read-pages" type="number" min="0" inputmode="numeric" />
+          </label>
+        </div>
+
+        <div class="book-progress hidden">
+          <div class="book-progress-meta">
+            <span class="book-progress-text"></span>
+            <span class="book-progress-percent"></span>
+          </div>
+          <div class="mini-progress-track">
+            <div class="mini-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="status-buttons">
+          <button type="button" data-status="want">Хочу</button>
+          <button type="button" data-status="reading">Читаю</button>
+          <button type="button" data-status="done">Прочитала</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
