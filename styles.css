@@ -1,0 +1,300 @@
+:root {
+  color-scheme: dark;
+  --bg: #130b04;
+  --panel: #211106;
+  --panel-soft: #1a0e05;
+  --line: #5a391a;
+  --line-soft: #3e2714;
+  --text: #f6d8ad;
+  --muted: #c19153;
+  --accent: #e58f2f;
+  --accent-2: #d4a73f;
+  --success: #d8b965;
+  --danger: #d9745b;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  background: radial-gradient(circle at top, #2c1709 0%, var(--bg) 55%);
+  color: var(--text);
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px 12px 28px;
+  display: grid;
+  gap: 12px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.card,
+.card-soft {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 90%, black 10%);
+}
+
+.card {
+  padding: 14px;
+}
+
+.card-soft {
+  padding: 12px;
+}
+
+.header {
+  display: grid;
+  gap: 12px;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.period {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.date-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+input,
+button {
+  font: inherit;
+}
+
+input {
+  width: 100%;
+  background: #160b04;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 8px 10px;
+}
+
+button {
+  border: 1px solid var(--line);
+  background: #2a1709;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.metric {
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 10px;
+  background: #1a0f06;
+}
+
+.metric span {
+  color: var(--muted);
+  display: block;
+  font-size: 0.8rem;
+}
+
+.metric strong {
+  font-size: 1.35rem;
+}
+
+.timeline {
+  display: grid;
+  gap: 8px;
+}
+
+.timeline-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+#deltaLabel {
+  color: var(--accent);
+}
+
+.timeline-bar {
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: #120903;
+  border: 1px solid var(--line-soft);
+  overflow: hidden;
+}
+
+.pages-layer {
+  position: absolute;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #bf6f24 0%, var(--accent) 100%);
+}
+
+.pace-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(var(--accent-2), #f6c66f);
+  box-shadow: 0 0 8px #f6c66f66;
+}
+
+.timeline-caption {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.book-form {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1.3fr 1fr 0.7fr auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: transparent;
+}
+
+.tab.active {
+  border-color: var(--accent-2);
+  color: #f9ca7c;
+}
+
+.books {
+  display: grid;
+  gap: 10px;
+}
+
+.book-card {
+  display: grid;
+  gap: 10px;
+}
+
+.book-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.book-title {
+  font-size: 1.08rem;
+}
+
+.book-author {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.book-progress {
+  display: grid;
+  gap: 6px;
+}
+
+.book-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.mini-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #100701;
+  border: 1px solid var(--line-soft);
+}
+
+.mini-progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a65e20, var(--accent));
+}
+
+.status-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-buttons button.active {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.delete-btn {
+  border-radius: 8px;
+  color: var(--danger);
+  padding: 4px 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 680px) {
+  .book-form {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
